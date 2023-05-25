@@ -1,0 +1,33 @@
+    processor 6502
+
+    seg HEADER
+	org $00
+	byte $4e,$45,$53,$1a    ; NES header
+	byte $02                ; Number of 16KB PRG-ROM banks
+    byte $01                ; Number of 8KB CHR-ROM banks
+    byte %00000001          ; Vertical mirroring, no save RAM, no mapper
+    byte %00000000          ; No special-case flags set, no mapper
+    byte $00                ; No PRG-RAM present
+    byte $00                ; NTSC format
+    byte $00,$00,$00        ; Reservado
+    byte $00,$00,$00        ; Reservado
+
+    seg ZEROPAGE
+    org $10
+    ; 256 bytes reservado para variables
+    
+    seg CODE
+    org $8000 
+
+reset:              ; Aquí inicia el programa
+    SEI             ; Deshabilita las interrupciones
+    CLD             ; Deshabilita el modo decimal
+
+forever:
+    JMP forever     ; Ciclo infinito
+
+    seg VECTORS
+    org $FFFA
+    word 0          ; NMI
+    word reset      ; Reset
+    word 0          ; IRQ
