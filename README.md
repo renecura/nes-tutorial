@@ -42,3 +42,9 @@ Se hacen definiciones para tener el código más claro y separarlo en diferentes
 ### 03 - Subrutinas
 
 Definir subrutinas comunes para facilitar el proceso de desarrollo.
+
+### 04 - Sprites
+
+Dibuja un sprite en pantalla compuesto de multiples tiles.
+Incluye manejo de interrupciones.
+
