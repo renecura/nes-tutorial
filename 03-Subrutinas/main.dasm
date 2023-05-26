@@ -1,0 +1,54 @@
+    processor 6502
+    include "nesdefs.inc"
+
+    seg HEADER
+	org $7FF0
+	byte $4e,$45,$53,$1a    ; NES header
+	byte $02                ; Number of 16KB PRG-ROM banks
+    byte $01                ; Number of 8KB CHR-ROM banks
+    byte %00000001          ; Vertical mirroring, no save RAM, no mapper
+    byte %00000000          ; No special-case flags set, no mapper
+    byte $00                ; No PRG-RAM present
+    byte $00                ; NTSC format
+    byte $00,$00,$00        ; Reservado
+    byte $00,$00,$00        ; Reservado
+    
+    seg CODE
+    org $8000 
+
+reset:              ; Aquí inicia el programa
+    SEI             ; Deshabilita las interrupciones
+    CLD             ; Deshabilita el modo decimal
+
+    ; Inicializa la PPU
+	JSR InitPPU
+    JSR WaitVBlank
+
+main:					   ; programa principal
+	LDA PPU_STATUS         ; ping a PPU_STATUS
+	
+    LDA #%00011110
+	STA PPU_MASK
+
+    JSR LoadPalettes	
+    
+forever:
+    JMP forever     ; Ciclo infinito
+
+palettes:
+    include "palettes.inc"
+
+    include "nesppu.inc"    ; Incluye las subrutinas de la PPU
+
+    seg VECTORS
+    org $FFFA
+    word 0          ; NMI
+    word reset      ; Reset
+    word 0          ; IRQ
+
+    ; CHR-ROM
+    seg CHRROM
+    org $10000
+    incbin "starfield.chr"
+    
+

@@ -38,3 +38,7 @@ Define el modo de uso de la PPU y muestra una pantalla verde.
 ### 02 - Refactoring
 
 Se hacen definiciones para tener el código más claro y separarlo en diferentes archivos.
+
+### 03 - Subrutinas
+
+Definir subrutinas comunes para facilitar el proceso de desarrollo.
