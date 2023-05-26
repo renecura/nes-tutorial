@@ -28,3 +28,9 @@ fceux main.nes
 ### 00 - Inicialización
 
 Establece los espacios de memoria y el código mínimo para verificar el ambiente de desarrollo.
+
+### 01 - Pantalla
+
+Define el modo de uso de la PPU y muestra una pantalla verde.
+
+> Desafio: Cambiar el color

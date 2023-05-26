@@ -2,7 +2,7 @@
 
     seg HEADER
 	org $7FF0
-	byte $4E,$45,$53,$1A    ; NES header
+	byte $4e,$45,$53,$1a    ; NES header
 	byte $02                ; Number of 16KB PRG-ROM banks
     byte $01                ; Number of 8KB CHR-ROM banks
     byte %00000001          ; Vertical mirroring, no save RAM, no mapper
@@ -11,10 +11,6 @@
     byte $00                ; NTSC format
     byte $00,$00,$00        ; Reservado
     byte $00,$00,$00        ; Reservado
-
-    seg ZEROPAGE
-    org $10
-    ; 256 bytes reservado para variables
     
     seg CODE
     org $8000 
@@ -23,6 +19,30 @@ reset:              ; Aquí inicia el programa
     SEI             ; Deshabilita las interrupciones
     CLD             ; Deshabilita el modo decimal
 
+    ; Inicializa la PPU
+	LDA #$00
+	STA $2000           ; PPU_CTRL
+	STA $2001           ; PPU_MASK
+
+vblank:
+	BIT $2002		    ; Verifica PPU_STATUS
+	BPL vblank	        ; Espera vblank
+
+main:					; programa principal
+	LDA $2002           ; ping a PPU_STATUS
+	
+    LDA #%00011110
+	STA $2001           ; PPU_MASK
+
+    ; Carga el color de fondo
+	LDA #$3F
+	STA $2006           ; PPU_ADDR
+	LDA #$00
+	STA $2006           ; PPU_ADDR
+    	
+	LDA #$29			; Color. $29 -> Verde
+	STA $2007           ; PPU_DATA
+    
 forever:
     JMP forever     ; Ciclo infinito
 
@@ -31,3 +51,11 @@ forever:
     word 0          ; NMI
     word reset      ; Reset
     word 0          ; IRQ
+
+    ; CHR-ROM
+    seg CHRROM
+    org $10000
+    hex 00 00 00 00 00 00 00 00
+    hex 00 00 00 00 00 00 00 00
+    
+    
