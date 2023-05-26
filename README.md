@@ -34,3 +34,7 @@ Establece los espacios de memoria y el código mínimo para verificar el ambient
 Define el modo de uso de la PPU y muestra una pantalla verde.
 
 > Desafio: Cambiar el color
+
+### 02 - Refactoring
+
+Se hacen definiciones para tener el código más claro y separarlo en diferentes archivos.
