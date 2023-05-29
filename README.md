@@ -4,9 +4,11 @@
 
 ## Ambiente de desarrollo
 
-* Compilador - dasm
-* Emulador - fceux
-* Editor - vscode
+* [Compilador - dasm](https://dasm-assembler.github.io/)
+* [Emulador - fceux](https://fceux.com/web/home.html)
+* [Editor - vscode](https://code.visualstudio.com/)
+    * [Extension: DASM](https://marketplace.visualstudio.com/items?itemName=Settis.dasm)
+    * [Extensión: Hex Editor](https://marketplace.visualstudio.com/items?itemName=ms-vscode.hexeditor)
 
 ## Compilación
 
@@ -22,6 +24,7 @@ fceux main.nes
 
 * https://8bitworkshop.com/ 
 * https://famicom.party/
+* https://www.nesdev.org/
 
 ## Paso a paso
 
