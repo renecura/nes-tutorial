@@ -51,3 +51,6 @@ Definir subrutinas comunes para facilitar el proceso de desarrollo.
 Dibuja un sprite en pantalla compuesto de multiples tiles.
 Incluye manejo de interrupciones.
 
+### 05 - Background
+
+Explica el proceso de carga de los datos de nametables para definir el fondo del nivel.

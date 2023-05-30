@@ -1,0 +1,120 @@
+    processor 6502
+    include "nesdefs.inc"
+
+    seg.u ZEROPAGE
+    org $0
+
+ntpage      byte                ; BG page index    
+bgaddrl     byte
+bgaddrh     byte
+
+
+    seg HEADER
+	org $7FF0
+	byte $4e,$45,$53,$1a    ; NES header
+	byte $02                ; Number of 16KB PRG-ROM banks
+    byte $01                ; Number of 8KB CHR-ROM banks
+    byte %00000001          ; Vertical mirroring, no save RAM, no mapper
+    byte %00000000          ; No special-case flags set, no mapper
+    byte $00                ; No PRG-RAM present
+    byte $00                ; NTSC format
+    byte $00,$00,$00        ; Reservado
+    byte $00,$00,$00        ; Reservado
+    
+    seg CODE
+    org $8000 
+
+reset:              ; Aquí inicia el programa
+    SEI             ; Deshabilita las interrupciones
+    CLD             ; Deshabilita el modo decimal
+
+    ; Inicializa la PPU
+	JSR InitPPU
+    JSR WaitVBlank
+
+main:					   ; programa principal
+	LDA PPU_STATUS         ; ping a PPU_STATUS
+	
+    JSR LoadPalettes
+
+    LDA #$00
+    STA PPU_SCROLL
+    STA PPU_SCROLL
+
+    ; Load background
+    LDA #<background
+    STA bgaddrl
+    LDA #>background
+    STA bgaddrh
+
+    LDA #$20
+    STA ntpage
+
+    LDX #$04
+loop4:
+    JSR LoadNametable
+    INC bgaddrh
+    INC ntpage
+    DEX
+    BNE loop4
+
+    ; Activa la PPU
+    LDA #%00011110
+	STA PPU_MASK
+
+forever:
+    
+    LDX #$00
+.loop:
+    LDA sprites,x
+    STA OAM_RAM,x
+    INX
+    CPX #$10
+    BNE .loop
+
+    JSR WaitVBlank
+
+    LDA #%10010000  ; turn on NMIs, sprites use first pattern table
+    STA PPU_CTRL
+
+    JMP forever     ; Ciclo infinito
+
+nmi_handler:
+  LDA #$00
+  STA OAM_ADDR
+  LDA #$02
+  STA OAM_DMA
+
+  LDA #$00
+  STA PPU_SCROLL
+  STA PPU_SCROLL
+  RTI
+
+sprites:
+    byte $70,$05,%00000000,$80
+    byte $70,$06,%00000000,$88
+    byte $78,$07,%00000000,$80
+    byte $78,$08,%00000000,$88
+
+palettes:
+    include "palettes.inc"
+
+background:
+    incbin "background.nam"
+
+
+    include "nesppu.inc"    ; Incluye las subrutinas de la PPU
+
+    seg VECTORS
+    org $FFFA
+    word nmi_handler    ; NMI
+    word reset          ; Reset
+    word 0              ; IRQ
+
+    ; CHR-ROM
+    seg CHRROM
+    org $10000
+    incbin "starfield.chr"
+    
+    
+
