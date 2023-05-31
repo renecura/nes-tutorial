@@ -28,18 +28,31 @@ LoadPalettes:
     BNE .load_pallete
 	RTS
 
-LoadNametable:
-    LDA PPU_STATUS
-    LDA ntpage
+; Carga 1KB completo de memoria a la nametable de la PPU
+; Estos deben ser datos binarios bajo la etiqueta background
+LoadNametable: subroutine
+    LDA #<background
+    STA bgaddrl
+    LDA #>background
+    STA bgaddrh
+
+    LDA #$20
     STA PPU_ADDR
     LDA #$00
     STA PPU_ADDR
 
+    LDX #$04
+.loopX:
+    
     LDY #$00
-.bgloop
+.loopY
     LDA (bgaddrl),y
     STA PPU_DATA
     INY
-    BNE .bgloop
+    BNE .loopY
+
+    INC bgaddrh
+    DEX
+    BNE .loopX
   
   	RTS

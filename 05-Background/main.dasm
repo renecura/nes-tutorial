@@ -37,27 +37,14 @@ main:					   ; programa principal
 	
     JSR LoadPalettes
 
-    LDA #$00
-    STA PPU_SCROLL
-    STA PPU_SCROLL
-
     ; Load background
     LDA #<background
     STA bgaddrl
     LDA #>background
     STA bgaddrh
 
-    LDA #$20
-    STA ntpage
-
-    LDX #$04
-loop4:
     JSR LoadNametable
-    INC bgaddrh
-    INC ntpage
-    DEX
-    BNE loop4
-
+    
     ; Activa la PPU
     LDA #%00011110
 	STA PPU_MASK
