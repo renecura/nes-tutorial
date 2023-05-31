@@ -8,6 +8,13 @@ ntpage      byte                ; BG page index
 bgaddrl     byte
 bgaddrh     byte
 
+playerx     byte                ; Posición del jugador
+playery     byte
+
+pad1        byte                ; Controlador jugador 1
+pad2        byte                ; Controlador jugador 2
+
+
     seg HEADER
 	org $7FF0
 	byte $4e,$45,$53,$1a    ; NES header
@@ -44,13 +51,23 @@ main:					   ; programa principal
 
     JSR LoadNametable
 
+    ; Establece la posicion inicial del jugador
+    LDA #$70
+    STA playery
+    LDA #$80
+    STA playerx
+    
     
     ; Activa la PPU
     LDA #%00011110
 	STA PPU_MASK
 
 forever:
+
+    LDA #%00010000  ; turn off NMIs
+    STA PPU_CTRL
     
+    ; Copia los sprites a la OAM RAM
     LDX #$00
 .loop:
     LDA sprites,x
@@ -59,10 +76,15 @@ forever:
     CPX #$10
     BNE .loop
 
-    JSR WaitVBlank
+    JSR DrawPlayer
+
+    JSR ReadController1
+    JSR MovePlayer1
 
     LDA #%10010000  ; turn on NMIs, sprites use first pattern table
     STA PPU_CTRL
+
+    JSR WaitVBlank
 
     JMP forever     ; Ciclo infinito
 
@@ -78,10 +100,10 @@ nmi_handler:
   RTI
 
 sprites:
-    byte $70,$05,%00000000,$80
-    byte $70,$06,%00000000,$88
-    byte $78,$07,%00000000,$80
-    byte $78,$08,%00000000,$88
+    byte $00,$05,%00000000,$00
+    byte $00,$06,%00000000,$08
+    byte $08,$07,%00000000,$00
+    byte $08,$08,%00000000,$08
 
 palettes:
     include "palettes.inc"
@@ -91,6 +113,7 @@ background:
 
 
     include "nesppu.inc"    ; Incluye las subrutinas de la PPU
+    include "nesinput.inc"  ; Incluye las subrutinas de la entrada
 
     seg VECTORS
     org $FFFA
