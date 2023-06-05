@@ -3,13 +3,14 @@
 
     seg.u ZEROPAGE
     org $0
+playerx     byte                ; Posición del jugador
+playery     byte
 
 ntpage      byte                ; BG page index    
 bgaddrl     byte
 bgaddrh     byte
 
-playerx     byte                ; Posición del jugador
-playery     byte
+
 
 pad1        byte                ; Controlador jugador 1
 pad2        byte                ; Controlador jugador 2
@@ -49,7 +50,7 @@ main:					   ; programa principal
     LDA #>background
     STA bgaddrh
 
-    JSR LoadNametable
+    ;JSR LoadNametable
 
     ; Establece la posicion inicial del jugador
     LDA #$70

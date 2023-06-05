@@ -1,0 +1,122 @@
+    processor 6502
+    include "nesdefs.inc"
+
+    seg.u ZEROPAGE
+    org $0
+playerx     byte                ; Posición del jugador
+playery     byte
+
+
+    seg HEADER
+	org $7FF0
+	byte $4E,$45,$53,$1A    ; NES header
+	byte $02                ; Number of 16KB PRG-ROM banks
+    byte $01                ; Number of 8KB CHR-ROM banks
+    byte %00000001          ; Vertical mirroring, no save RAM, no mapper
+    byte %00000000          ; No special-case flags set, no mapper
+    byte $00                ; No PRG-RAM present
+    byte $00                ; NTSC format
+    byte $00,$00,$00        ; Reservado
+    byte $00,$00,$00        ; Reservado
+
+    seg CODE
+    org $8000
+
+reset:
+    SEI
+    CLD
+
+    JSR InitPPU
+    JSR WaitVBlank
+
+main:					; programa principal
+	LDA PPU_STATUS           ; ping a PPU_STATUS
+	
+    LDA #%00011110
+	STA PPU_MASK           ; PPU_MASK
+
+    JSR LoadPalettes
+
+    ; Establece la posición inicial de la nave
+    LDA #$70
+    STA playery
+    LDA #$80
+    STA playerx
+
+forever:
+    ; Desactiva la interrupcion de la PPU
+    LDA #%00010000
+    STA PPU_CTRL
+
+    ; Dibuja toda la navecita
+    LDX #$00    
+    JSR DibujarSprite
+    INX
+    JSR DibujarSprite
+    INX
+    JSR DibujarSprite
+    INX
+    JSR DibujarSprite
+
+    ; Mueve la posición vertical de la navecita
+    DEC playery
+
+    ; Activa la interrupcion de la PPU
+    LDA #%10010000  
+    STA PPU_CTRL
+
+    JSR WaitVBlank
+   
+
+    JMP forever
+; #### A partir de aquí, no se ejecuta #######
+
+
+nmi_handler:
+    ; Envía señal a la PPU para dibujar los Sprites
+    LDA #$00
+    STA OAM_ADDR
+    LDA #$02
+    STA OAM_DMA
+
+    ; Hace que no se desplace la pantalla
+    LDA #$00
+    STA PPU_SCROLL
+    STA PPU_SCROLL
+
+    RTI
+
+; Aquí se guardan los datos del programa
+
+    include "nesppu.inc"
+palettes:
+    include "palettes.inc"
+
+navecita:
+    byte $00,$05,%00000000,$00
+    byte $00,$06,%00000000,$08
+    byte $08,$07,%00000000,$00
+    byte $08,$08,%00000000,$08
+
+
+
+; Definición de las direcciones de las interrupciones
+    seg VECTORS
+    org $FFFA
+    word nmi_handler
+    word reset
+    word 0
+
+
+    ; CHR-ROM
+    seg CHRROM
+    org $10000
+    incbin "starfield.chr"
+
+
+
+
+
+
+
+
