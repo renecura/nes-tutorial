@@ -1,4 +1,4 @@
-    processor 6502
+    processor 6502          ; Indica el procesador objetivo
 
     seg HEADER
 	org $7FF0
@@ -12,12 +12,8 @@
     byte $00,$00,$00        ; Reservado
     byte $00,$00,$00        ; Reservado
 
-    seg ZEROPAGE
-    org $10
-    ; 256 bytes reservado para variables
-    
-    seg CODE
-    org $8000 
+    seg CODE                ; En este segmento comienza el código del programa
+    org $8000               ; Dirección de la PRG-ROM (Program ROM)
 
 reset:              ; Aquí inicia el programa
     SEI             ; Deshabilita las interrupciones
@@ -26,7 +22,8 @@ reset:              ; Aquí inicia el programa
 forever:
     JMP forever     ; Ciclo infinito
 
-    seg VECTORS
+    
+    seg VECTORS     ; Este segmento define las direcciones donde se manejan las interrupciones
     org $FFFA
     word 0          ; NMI
     word reset      ; Reset
