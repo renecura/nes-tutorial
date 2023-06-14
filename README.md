@@ -21,7 +21,7 @@ fceux main.nes
 ```
 
 ## Recursos
-
+* http://www.6502.org/
 * https://8bitworkshop.com/ 
 * https://famicom.party/
 * https://www.nesdev.org/
