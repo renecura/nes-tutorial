@@ -54,3 +54,7 @@ Incluye manejo de interrupciones.
 ### 05 - Background
 
 Explica el proceso de carga de los datos de nametables para definir el fondo del nivel.
+
+### 06 - Movimiento
+
+Realiza la lectura del controlador y mueve el sprite dibujado en base a los controles.
